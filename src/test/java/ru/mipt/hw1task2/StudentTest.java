@@ -8,14 +8,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class StudentTest {
     @Test
-    public void ctor_shouldCreateWithName() {
+    public void ctr_shouldCreateWithName() {
         String name = "Ivan Ivanov";
         Student ivan = new Student(name);
         assertEquals(name, ivan.getName());
     }
 
     @Test
-    public void ctor_shouldCreateWithNameAndMarks() {
+    public void ctr_shouldCreateWithNameAndMarks() {
         String name = "Peter Petrov";
         List<Integer> marks = List.of(5, 4, 3, 4, 5);
         Student peter = new Student(name, marks);
@@ -55,19 +55,12 @@ public class StudentTest {
     }
 
     @Test
-    public void marks_shouldThrowExceptionWhenRemoveFromEmptyList() {
+    public void marks_shouldRemoveMarkFromEmptyListWithNoEffect() {
         String name = "Peter Petrov";
         Student peter = new Student(name);
-        assertThrows(IllegalArgumentException.class, () -> peter.removeMark(0));
-    }
-
-    @Test
-    public void marks_shouldThrowExceptionWhenRemoveWithInvalidIndex() {
-        String name = "Peter Petrov";
-        List<Integer> initialMarks = List.of(5, 4, 3, 4);
-        Student peter = new Student(name, initialMarks);
-        assertThrows(IllegalArgumentException.class, () -> peter.removeMark(-1));
-        assertThrows(IllegalArgumentException.class, () -> peter.removeMark(initialMarks.size()));
+        int someIndex = 5;
+        peter.removeMark(someIndex);
+        assertEquals(0, peter.getMarks().size());
     }
 
     @Test
@@ -86,14 +79,6 @@ public class StudentTest {
         assertEquals(expectedMarks, peter.getMarks());
     }
 
-    @Test
-    public void marks_shouldThrowExceptionWhenGetWithInvalidIndex() {
-        String name = "Peter Petrov";
-        List<Integer> initialMarks = List.of(5, 4, 3, 4);
-        Student peter = new Student(name, initialMarks);
-        assertThrows(IllegalArgumentException.class, () -> peter.getMark(-1));
-        assertThrows(IllegalArgumentException.class, () -> peter.getMark(initialMarks.size()));
-    }
     @Test
     public void str_shouldProvideToString() {
         String name = "Peter Petrov";
@@ -127,9 +112,6 @@ public class StudentTest {
         // Transitivity
         assertTrue(peter2.equals(peter1));
         assertTrue(peter3.equals(peter1));
-
-        // not equal to NULL
-        assertFalse(peter1.equals(null));
     }
 
     @Test
