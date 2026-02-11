@@ -1,24 +1,35 @@
-package ru.mipt.hw1task1;
+package ru.mipt.hw1task2;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 /**
- * Represents a Student with name and marks
+ * Represents a Student with name and marks of type T
  */
 
-public class Student {
+public class Student<T> {
     private String name;
-    private List<Integer> marks = new ArrayList<>();
+    private final List<T> marks;
+    private final Predicate<T> markValidityRule;
 
     public Student(String name) {
-        this.name = name;
+        this(name, List.of());
     }
 
-    public Student(String name, List<Integer> marks) {
+    public Student(String name, List<T> marks) {
+        this(name, marks, mark -> true);
+    }
+
+    public Student(String name, List<T> marks, Predicate<T> markValidityRule) {
         this.name = name;
-        this.marks = new ArrayList<>(marks);
+        this.marks = new ArrayList<T>(marks);
+        if (!marks.stream().allMatch(markValidityRule)) {
+            throw new IllegalArgumentException("Provided list of marks contains invalid values:" + marks);
+        }
+        this.markValidityRule = markValidityRule;
     }
 
     /**
@@ -40,33 +51,29 @@ public class Student {
     }
 
     /**
-     * Adds a given mark to this student's marks
+     * Adds a given mark to this student's marks.
+     * Throws InvalidParameterException if the mark doesn't conform to the rule.
      *
      * @param mark
+     * @throws InvalidParameterException
      */
-    public void addMark(int mark) {
+    public void addMark(T mark) throws InvalidParameterException {
+        if (!markValidityRule.test(mark)) {
+            throw new IllegalArgumentException("The given mark " + mark + " is invalid!");
+        }
         marks.add(mark);
     }
 
     /**
-     * Removes a mark with given index from this student's marks
+     * Removes last mark having provided value. If no such mark do nothing.
      *
-     * @param index
+     * @param value
      */
-    public void removeMark(int index) {
-        if (index < marks.size()) {
+    public void removeMark(int value) {
+        int index = marks.lastIndexOf(value);
+        if (index != -1) {
             marks.remove(index);
         }
-    }
-
-    /**
-     * Returns the mark with given index
-     *
-     * @param index
-     * @return mark with given index
-     */
-    public int getMark(int index) {
-        return marks.get(index);
     }
 
     /**
@@ -74,7 +81,7 @@ public class Student {
      *
      * @return list with all marks
      */
-    public List<Integer> getMarks() {
+    public List<T> getMarks() {
         return marks;
     }
 
