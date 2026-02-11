@@ -69,7 +69,7 @@ public class Student<T> {
      *
      * @param value
      */
-    public void removeMark(int value) {
+    public void removeMark(T value) {
         int index = marks.lastIndexOf(value);
         if (index != -1) {
             marks.remove(index);
