@@ -48,35 +48,16 @@ public class Student {
         marks.add(mark);
     }
 
-
     /**
-     * Removes a mark with given index from this student's marks
-     * Throws IllegalArgumentException if the index is out of bound.
+     * Removes last mark having provided value. If no such mark do nothing.
      *
-     * @param index
-     * @throws IllegalArgumentException
+     * @param value
      */
-    public void removeMark(int index) throws IllegalArgumentException {
-        if ((index >= 0) && (index < marks.size())) {
+    public void removeMark(int value) {
+        int index = marks.lastIndexOf(value);
+        if (index != -1) {
             marks.remove(index);
-            return;
         }
-        throw new IllegalArgumentException("The provided index " + index + " is out of bound");
-    }
-
-    /**
-     * Returns the mark with given index
-     * Throws IllegalArgumentException if the index is out of bound.
-     *
-     * @param index
-     * @return mark with given index
-     * @throws IllegalArgumentException
-     */
-    public int getMark(int index) throws IllegalArgumentException {
-        if ((index >= 0 ) && (index < marks.size())) {
-            return marks.get(index);
-        }
-        throw new IllegalArgumentException("The provided index " + index + " is out of bound");
     }
 
     /**

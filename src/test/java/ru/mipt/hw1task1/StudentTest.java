@@ -34,66 +34,48 @@ public class StudentTest {
     }
 
     @Test
-    public void marks_shouldAddMarkToEmptyList() {
+    public void addMarks_shouldAddMarkToEmptyList() {
         String name = "Peter Petrov";
         Student peter = new Student(name);
         int expectedMark = 3;
         peter.addMark(expectedMark);
-        assertEquals(1, peter.getMarks().size());
-        assertEquals(expectedMark, peter.getMark(0));
+        assertEquals(List.of(3), peter.getMarks());
     }
 
     @Test
-    public void marks_shouldAddMarkToNonEmptyList() {
+    public void addMarks_shouldAddMarkToNonEmptyList() {
         String name = "Peter Petrov";
         List<Integer> initialMarks = List.of(5, 4, 3, 4, 5, 2);
         Student peter = new Student(name, initialMarks);
-        int expectedMark = 3;
-        peter.addMark(expectedMark);
-        assertEquals(initialMarks.size() + 1, peter.getMarks().size());
-        assertEquals(expectedMark, peter.getMark(initialMarks.size()));
+        List<Integer> expectedMarks = List.of(5, 4, 3, 4, 5, 2, 3);
+        peter.addMark(3);
+        assertEquals(expectedMarks, peter.getMarks());
     }
 
     @Test
-    public void marks_shouldThrowExceptionWhenRemoveFromEmptyList() {
-        String name = "Peter Petrov";
-        Student peter = new Student(name);
-        assertThrows(IllegalArgumentException.class, () -> peter.removeMark(0));
-    }
-
-    @Test
-    public void marks_shouldThrowExceptionWhenRemoveWithInvalidIndex() {
+    public void removeMark_shouldRemoveMarksMultipleTime() {
         String name = "Peter Petrov";
         List<Integer> initialMarks = List.of(5, 4, 3, 4);
         Student peter = new Student(name, initialMarks);
-        assertThrows(IllegalArgumentException.class, () -> peter.removeMark(-1));
-        assertThrows(IllegalArgumentException.class, () -> peter.removeMark(initialMarks.size()));
+        peter.removeMark(3);
+        List<Integer> expectedMarks = List.of(5, 4, 4);
+        assertEquals(expectedMarks, peter.getMarks());
+
+        peter.removeMark(5);
+        expectedMarks = List.of(4, 4);
+        assertEquals(expectedMarks, peter.getMarks());
     }
 
     @Test
-    public void marks_shouldRemoveMarkFromNonEmptyList() {
+    public void removeMark_shouldDoNothingWhenNoSuchMark() {
         String name = "Peter Petrov";
         List<Integer> initialMarks = List.of(5, 4, 3, 4);
         Student peter = new Student(name, initialMarks);
         peter.removeMark(2);
-        List<Integer> expectedMarks = List.of(5, 4, 4);
-        assertEquals(initialMarks.size() - 1, peter.getMarks().size());
-        assertEquals(expectedMarks, peter.getMarks());
-
-        peter.removeMark(0);
-        expectedMarks = List.of(4, 4);
-        assertEquals(initialMarks.size() - 2, peter.getMarks().size());
+        List<Integer> expectedMarks = List.of(5, 4, 3, 4);
         assertEquals(expectedMarks, peter.getMarks());
     }
 
-    @Test
-    public void marks_shouldThrowExceptionWhenGetWithInvalidIndex() {
-        String name = "Peter Petrov";
-        List<Integer> initialMarks = List.of(5, 4, 3, 4);
-        Student peter = new Student(name, initialMarks);
-        assertThrows(IllegalArgumentException.class, () -> peter.getMark(-1));
-        assertThrows(IllegalArgumentException.class, () -> peter.getMark(initialMarks.size()));
-    }
     @Test
     public void str_shouldProvideToString() {
         String name = "Peter Petrov";
