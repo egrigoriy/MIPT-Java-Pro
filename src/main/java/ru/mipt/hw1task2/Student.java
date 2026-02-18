@@ -82,7 +82,7 @@ public class Student<T> {
      * @return list with all marks
      */
     public List<T> getMarks() {
-        return marks;
+        return new ArrayList<>(marks);
     }
 
     @Override
