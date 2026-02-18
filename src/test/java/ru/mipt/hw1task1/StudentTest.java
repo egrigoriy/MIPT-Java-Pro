@@ -2,6 +2,8 @@ package ru.mipt.hw1task1;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,6 +23,17 @@ public class StudentTest {
         Student peter = new Student(name, marks);
         assertEquals(name, peter.getName());
         List<Integer> expectedMarks = List.of(5, 4, 3, 4, 5);
+        assertEquals(expectedMarks, peter.getMarks());
+    }
+
+
+    @Test
+    public void ctor_shouldMakeCopyOfMarks() {
+        String name = "Peter Petrov";
+        List<Integer> initialMarks = Arrays.asList(5, 4, 3, 4);
+        Student peter = new Student(name, initialMarks);
+        initialMarks.set(0, 2);
+        List<Integer> expectedMarks = List.of(5, 4, 3, 4);
         assertEquals(expectedMarks, peter.getMarks());
     }
 
@@ -72,6 +85,20 @@ public class StudentTest {
         List<Integer> initialMarks = List.of(5, 4, 3, 4);
         Student peter = new Student(name, initialMarks);
         peter.removeMark(2);
+        List<Integer> expectedMarks = List.of(5, 4, 3, 4);
+        assertEquals(expectedMarks, peter.getMarks());
+    }
+
+
+    @Test
+    public void getMarks_shouldProvideACopy() {
+        String name = "Peter Petrov";
+        List<Integer> initialMarks = Arrays.asList(5, 4, 3, 4);
+        Student peter = new Student(name, initialMarks);
+
+        List<Integer> marks = peter.getMarks();
+        marks.set(0, 2);
+
         List<Integer> expectedMarks = List.of(5, 4, 3, 4);
         assertEquals(expectedMarks, peter.getMarks());
     }

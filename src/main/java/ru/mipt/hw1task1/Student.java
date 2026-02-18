@@ -1,6 +1,7 @@
 package ru.mipt.hw1task1;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -66,7 +67,7 @@ public class Student {
      * @return list with all marks
      */
     public List<Integer> getMarks() {
-        return marks;
+        return new ArrayList<>(marks);
     }
 
     @Override
