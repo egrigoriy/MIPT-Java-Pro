@@ -1,22 +1,18 @@
 package ru.mipt.hw1task4;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.function.*;
 
 public class Flow<T> {
-    private List<T> data;
-    List<Runnable> operations = new ArrayList<>();
+    private final Supplier<List<T>> dataSupplier;
 
-    private Flow(List<T> list) {
-        if (list == null) throw new NullPointerException("Provided argument is null");
-        data = new ArrayList<>(list);
+    private Flow(Supplier<List<T>> supplier) {
+        this.dataSupplier = supplier;
     }
 
     public static <T> Flow<T> of(List<T> list) {
-        return new Flow<>(list);
+        if (list == null || list.contains(null)) throw new IllegalArgumentException("The provided list is null");
+        return new Flow<>(() -> new ArrayList<>(list));
     }
 
     @SafeVarargs
@@ -25,64 +21,64 @@ public class Flow<T> {
     }
 
     public static <T> Flow<T> of(T seed, Function<T, T> next, Predicate<T> hasNext) {
-        List<T> list = new ArrayList<>();
-        T val = seed;
-        while(hasNext.test(val)) {
-            list.add(val);
-            val = next.apply(val);
-        }
-        return Flow.of(list);
+        if ((seed == null) || (next == null) || (hasNext == null))
+            throw new IllegalArgumentException("Provided null argument.");
+
+        Supplier<List<T>> supplier = () -> {
+            List<T> result = new ArrayList<>();
+            T val = seed;
+            while (hasNext.test(val)) {
+                result.add(val);
+                val = next.apply(val);
+            }
+            return result;
+        };
+        return new Flow<>(supplier);
     }
 
-    public Flow<T> map(Function<T, T> function) {
-        Runnable runnable = () -> {
-            List<T> result = new ArrayList<>();
-            for (T el : data) {
+    public <R> Flow<R> map(Function<T, R> function) {
+        Supplier<List<R>> supplier = () -> {
+            List<R> result = new ArrayList<>();
+            for (T el : dataSupplier.get()) {
                 result.add(function.apply(el));
             }
-            data = result;
+            return result;
         };
-        operations.add(runnable);
-        return this;
+        return new Flow<R>(supplier);
     }
 
     public Flow<T> filter(Predicate<T> predicate) {
-        Runnable runnable = () -> {
+        Supplier<List<T>> supplier = () -> {
             List<T> result = new ArrayList<>();
-            for (var el : data) {
+            for (var el : dataSupplier.get()) {
                 if (predicate.test(el)) {
-                result.add(el);
+                    result.add(el);
+                }
             }
-        }
-        data = result;
-    };
-    operations.add(runnable);
-    return this;
-}
-
-public T reduce(BinaryOperator<T> operator) {
-    for (Runnable runnable : operations) {
-        runnable.run();
+            return result;
+        };
+        return new Flow<>(supplier);
     }
-    T acc = data.get(0);
-    for (int i = 1; i < data.size(); i++) {
-        acc = operator.apply(acc, data.get(i));
-    }
-    return acc;
-}
 
-public <U, V> Collection<T> collect(Supplier<Collection<T>> supplier, BiConsumer<U, V> combiner) {
-        Collection<T> result = supplier.get();
-        for (T el : data) {
-
+    public Optional<T> reduce(BinaryOperator<T> operator) {
+        List<T> data = dataSupplier.get();
+        if (data.isEmpty()) return Optional.empty();
+        T accumulator = data.get(0);
+        for (int i = 1; i < data.size(); i++) {
+            accumulator = operator.apply(accumulator, data.get(i));
         }
-        return result;
+        return Optional.of(accumulator);
+    }
+
+    public <A> A collect(Supplier<A> supplier, BiConsumer<A, T> combiner) {
+        A accumulator = supplier.get();
+        for (T el : dataSupplier.get()) {
+            combiner.accept(accumulator, el);
+        }
+        return accumulator;
     }
 
     public List<T> toList() {
-        for (Runnable runnable : operations) {
-            runnable.run();
-        }
-        return new ArrayList<>(data);
+        return new ArrayList<>(dataSupplier.get());
     }
 }
